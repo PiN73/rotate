@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8>
+	<title>Title</title>
+	<style>
+		body { margin: 0; overflow: hidden; }
+		canvas { display: block; }
+		/* canvas { width: 100%; height: 100% } */
+	</style>
+</head>
+<body>
+	<div ng-app="app" style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;justify-content:space-between;">
+			<div>
+				<div class="block">
+					<p><center>Выбор объекта</center></p>
+					<p>
+						<button onclick="loadObject('polyhedron.obj')">Многогранник</button>
+						<button onclick="loadObject('house.obj')">Дом</button>
+					</p>
+					<p>
+						<button onclick="loadObject('jetanima.obj')">Самолёт</button>
+						<button onclick="loadObject('lamborghini.obj')">Автомобиль</button>
+					</p>
+					<p><center>Загрузить файл .obj</center></p>
+					<p><input type="file" id="file-input" accept=".obj" /><span id="file-status"></span></p>
+				</div>
+				<div class="block">
+					<p><center>Шесть степеней свободы</center></p>
+					<p><u>Позиция по осям</u></p>
+					<p ng-controller="positionXYZ" ng-repeat="i in 'xyz'" style="display:flex">
+						<span>{{i}} = </span>
+						<input style="width:3em" ng-model="position[i]" />
+						<input type="range" ng-model="position[i]" min="{{pos_min}}" max="{{pos_max}}" step="any">
+						<button ng-click="position[i]=0">0</button>
+					</p>
+					<p><u>Углы Эйлера</u></p>
+					<p ng-controller="anglesXYZ" ng-repeat="i in 'xyz'" style="display:flex">
+						<span title="{{angles[i].info}}" ng-click="alert(angles[i].info)"><span class="u">{{angles[i].name}}</span> =</span>
+						<input style="width:3em" ng-model="rotation[i]" />
+						<input type="range" ng-model="rotation[i]" min="{{angle_min}}" max="{{angle_max}}" step="any">
+						<button ng-click="rotation[i]=0">0</button>
+					</p>
+				</div>
+			</div>
+			<div>
+				<div ng-controller="camera" class="block" style="padding:1ex">
+					<span>Направление камеры </span>
+					<select ng-options="item as item.label for item in items" ng-model="selected" ng-init="update()" ng-change="update()"></select>
+				</div>
+			</div>
+			<div>
+				<div ng-controller="axis_and_angle" class="block">
+					<p><center>Ось вращения и угол</center></p>
+					<p><u>Точка на прямой</u></p>
+					<p ng-repeat="i in 'xyz'" style="display:flex">
+						<span>{{i}} = </span>
+						<input style="width:3em" ng-model="point[i]" />
+						<input type="range" ng-model="point[i]" min="{{point_min}}" max="{{point_max}}" step="any">
+						<button ng-click="point[i]=0">0</button>
+					</p>
+					<p><u>Направляющий вектор</u></p>
+					<p ng-repeat="i in 'xyz'" style="display:flex">
+						<span>{{i}} = </span>
+						<input style="width:3em" ng-model="vector[i]" />
+						<input type="range" ng-model="vector[i]" min="{{vector_min}}" max="{{vector_max}}" step="any">
+						<button ng-click="vector[i]=0">0</button>
+					</p>
+					<p><u>Угол поворота</u></p>
+					<p style="display:flex">
+						<span>&phi; = </span>
+						<input style="width:3em" ng-model="angle" />
+						<input type="range" ng-model="angle" min="{{angle_min}}" max="{{angle_max}}" step="any">
+						<button ng-click="angle=0">0</button>
+					</p>
+					<p>
+						<button ng-click="rotate()">Повернуть</button>
+					</p>
+				</div>
+				<div ng-controller="quaternion" class="block">
+					<p><center>Кватернион поворота</center></p>
+					<p ng-repeat="i in 'xyzw'" style="display:flex">
+						<span title="{{values[i].info}}" ng-click="alert(values[i].info)"><span class="u">{{values[i].name}}</span> =</span>
+						<input style="width:3em" ng-model="quaternion[i]" />
+						<input type="range" ng-model="quaternion[i]" min="{{value_min}}" max="{{value_max}}" step="any">
+						<button ng-click="quaternion[i]=values[i].default">{{values[i].default}}</button>
+					</p>
+					<p>
+						<button ng-click="quaternion.normalize()" ng-disabled="isNormalized()">Нормировать</button>
+						<label><input type="checkbox" ng-model="keepNormalized">Всегда</label>
+					</p>
+				</div>
+			</div>
+		</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/90/three.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	<script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
+	<script src="main.js"></script>
+	<style>
+		@import url('https://fonts.googleapis.com/css?family=Roboto');
+		body {
+			font-family: Roboto;
+		}
+		input {
+			padding: 0 .5ex;
+			margin: 0 .5ex;
+		}
+		p {
+			margin: .5ex;
+		}
+		div.block {
+			border: 1px solid gray;
+			margin: 1ex;
+		}
+		span.u {	
+			border-bottom: 0.1em dotted #000;
+			text-decoration: none;
+		}
+	</style>
+</body>
+</html>
